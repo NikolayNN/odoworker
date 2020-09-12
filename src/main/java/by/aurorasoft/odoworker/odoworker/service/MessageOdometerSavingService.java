@@ -6,10 +6,12 @@ import by.aurorasoft.odoworker.odoworker.domain.UnitOdoTemp;
 import by.aurorasoft.odoworker.odoworker.repository.MessageRepository;
 import by.aurorasoft.odoworker.odoworker.repository.UnitOdoTempRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class MessageOdometerSavingService {
@@ -21,9 +23,6 @@ public class MessageOdometerSavingService {
     public void save(Message m, double oda, UnitOdoTemp unitOdoTemp) {
         Messages.addAbsoluteOdo(m, oda);
         messageRepository.save(m);
-        if(oda > 45){
-            throw new RuntimeException();
-        }
         unitOdoTemp.setLastDatetime(m.getDatetime());
         unitOdoTemp.setLastMessageId(m.getId());
         unitOdoTempRepository.save(unitOdoTemp);
