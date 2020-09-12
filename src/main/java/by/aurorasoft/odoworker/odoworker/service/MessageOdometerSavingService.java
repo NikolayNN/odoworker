@@ -1,0 +1,31 @@
+package by.aurorasoft.odoworker.odoworker.service;
+
+import by.aurorasoft.odoworker.odoworker.domain.Message;
+import by.aurorasoft.odoworker.odoworker.domain.Messages;
+import by.aurorasoft.odoworker.odoworker.domain.UnitOdoTemp;
+import by.aurorasoft.odoworker.odoworker.repository.MessageRepository;
+import by.aurorasoft.odoworker.odoworker.repository.UnitOdoTempRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+
+@Service
+@AllArgsConstructor
+public class MessageOdometerSavingService {
+
+    private final MessageRepository messageRepository;
+    private final UnitOdoTempRepository unitOdoTempRepository;
+
+    @Transactional
+    public void save(Message m, double oda, UnitOdoTemp unitOdoTemp) {
+        Messages.addAbsoluteOdo(m, oda);
+        messageRepository.save(m);
+        if(oda > 45){
+            throw new RuntimeException();
+        }
+        unitOdoTemp.setLastDatetime(m.getDatetime());
+        unitOdoTemp.setLastMessageId(m.getId());
+        unitOdoTempRepository.save(unitOdoTemp);
+    }
+}
