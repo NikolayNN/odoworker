@@ -4,6 +4,7 @@ import by.aurorasoft.odoworker.odoworker.domain.Message;
 import by.aurorasoft.odoworker.odoworker.domain.Messages;
 import by.aurorasoft.odoworker.odoworker.repository.MessageRepository;
 import by.nhorushko.distancecalculator.DistanceCalculator;
+import by.nhorushko.distancecalculator.LatLngAltImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,8 +32,8 @@ class OdoWorkerIT {
     @Sql(value = {"classpath:sql/unit-9.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"classpath:sql/message-unit-9-small.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 
-//    @Sql(value = {"classpath:sql/message-unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"classpath:sql/message-unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void name() {
         odoWorker.start();
         List<Message> messages = messageRepository.findAll();
@@ -78,5 +79,29 @@ class OdoWorkerIT {
         double expected = distanceCalculator.calculateDistance(messageRepository.findAllByUnitId(9L));
 
         assertEquals(expected, actual, 10);
+    }
+
+    @Test
+    @Sql(value = {"classpath:sql/schema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/init-temp-odo.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/unit-9.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/message-unit-9-2859.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+
+    @Sql(value = {"classpath:sql/message-unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void name4() {
+        odoWorker.start();
+        Message message = messageRepository.findLastMessageForUnit(9l).get();
+        double actual = message.getValue(Messages.ABSOLUTE_ODO_TOKEN);
+        System.out.println("QQQQQ " + actual);
+    }
+
+    @Test
+    void name34() {
+        double v = distanceCalculator.calculateDistance(
+                new LatLngAltImpl(52.22583770751953f, 11.744101524353027f, 65),
+                new LatLngAltImpl(52.22579574584961f, 11.743881225585938f, 65)
+        );
+        System.out.println(v);
     }
 }

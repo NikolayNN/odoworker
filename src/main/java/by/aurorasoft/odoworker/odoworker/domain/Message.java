@@ -10,8 +10,8 @@ import java.time.Instant;
 
 @Data
 @Entity
-@Table(name = "message")
 @NoArgsConstructor
+@Table(name = "message")
 public class Message implements LatLngAlt {
 
     @Id
@@ -20,6 +20,9 @@ public class Message implements LatLngAlt {
 
     @Column(name = "datetime")
     private Instant datetime;
+
+    @Column(name = "speed")
+    private int speed;
 
     @Column(name = "latitude")
     private float latitude;

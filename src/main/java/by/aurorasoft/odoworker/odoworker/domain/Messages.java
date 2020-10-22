@@ -4,7 +4,7 @@ import java.util.Locale;
 
 public class Messages {
 
-    public static final String ABSOLUTE_ODO_TOKEN = "oda";
+    public static final String ABSOLUTE_ODO_TOKEN = "_odv";
 
     public static final String VALUE_TYPE = ":1:";
     public static final String VALUE_SEPARATOR = ",";
