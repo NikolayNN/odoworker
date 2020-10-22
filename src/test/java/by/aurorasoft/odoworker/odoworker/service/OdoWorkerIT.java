@@ -40,11 +40,11 @@ class OdoWorkerIT {
 
         assertEquals(5, messages.size());
 
-        assertEquals("oda:1:0.0", messages.get(0).getParams());
-        assertEquals("oda:1:12.4", messages.get(1).getParams());
-        assertEquals("oda:1:39.7", messages.get(2).getParams());
-        assertEquals("oda:1:44.1", messages.get(3).getParams());
-        assertEquals("oda:1:46.2", messages.get(4).getParams());
+        assertEquals("_odv:1:0.0", messages.get(0).getParams());
+        assertEquals("_odv:1:12.4", messages.get(1).getParams());
+        assertEquals("_odv:1:39.7", messages.get(2).getParams());
+        assertEquals("_odv:1:44.1", messages.get(3).getParams());
+        assertEquals("_odv:1:46.2", messages.get(4).getParams());
     }
 
     @Test
@@ -94,14 +94,5 @@ class OdoWorkerIT {
         Message message = messageRepository.findLastMessageForUnit(9l).get();
         double actual = message.getValue(Messages.ABSOLUTE_ODO_TOKEN);
         System.out.println("QQQQQ " + actual);
-    }
-
-    @Test
-    void name34() {
-        double v = distanceCalculator.calculateDistance(
-                new LatLngAltImpl(52.22583770751953f, 11.744101524353027f, 65),
-                new LatLngAltImpl(52.22579574584961f, 11.743881225585938f, 65)
-        );
-        System.out.println(v);
     }
 }
