@@ -1,9 +1,6 @@
 package by.aurorasoft.odoworker.odoworker.service;
 
-import by.aurorasoft.odoworker.odoworker.domain.Message;
-import by.aurorasoft.odoworker.odoworker.domain.Messages;
-import by.aurorasoft.odoworker.odoworker.domain.Unit;
-import by.aurorasoft.odoworker.odoworker.domain.UnitOdoTemp;
+import by.aurorasoft.odoworker.odoworker.domain.*;
 import by.aurorasoft.odoworker.odoworker.repository.MessageRepository;
 import by.aurorasoft.odoworker.odoworker.repository.UnitDataRepository;
 import by.aurorasoft.odoworker.odoworker.repository.UnitOdoTempRepository;
@@ -42,8 +39,22 @@ public class OdoWorker {
             log.debug("start unit: {}", unit);
             Optional<UnitOdoTemp> optional = unitOdoTempRepository.findById(unit.getId());
             if (optional.isEmpty()) {
+                log.debug("unit: {} is new", unit);
+                Optional<UnitData> last = unitDataRepository.findById(unit.getId());
+                if (last.isEmpty()) {
+                    log.debug("unit: {} no data by unit_data. skip", unit);
+                    continue;
+                }
+                if (last.get().getLastMessage() == null) {
+                    log.debug("unit: {} no data by last_message. skip", unit);
+                    continue;
+                }
+                Instant queryStart = Instant.now();
+                log.debug("unit: {} try find first message. query start at {}", unit, queryStart);
                 Optional<Message> firstMessageOptional = messageRepository.findFirstMessageForUnit(unit.getId());
+                log.debug("unit: {} query end. processing time: {} seconds", unit, (Instant.now().getEpochSecond() - queryStart.getEpochSecond()));
                 if (firstMessageOptional.isEmpty()) {
+                    log.debug("unit: {} no data. skip", unit);
                     continue;
                 }
                 optional = Optional.of(new UnitOdoTemp(unit.getId(), firstMessageOptional.get().getDatetime()));

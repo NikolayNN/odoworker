@@ -1,8 +1,11 @@
 package by.aurorasoft.odoworker.odoworker.domain;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.Instant;
 
+@Data
 @Entity
 @Table(name = "unit_odo_temp")
 public class UnitOdoTemp {

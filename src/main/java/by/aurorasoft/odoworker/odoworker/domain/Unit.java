@@ -2,9 +2,12 @@ package by.aurorasoft.odoworker.odoworker.domain;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
+@Data
 @Entity
 @AllArgsConstructor
 @Table(name = "unit")
