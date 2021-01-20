@@ -1,5 +1,6 @@
 package by.aurorasoft.odoworker.odoworker.domain;
 
+import java.lang.reflect.AccessibleObject;
 import java.util.Locale;
 
 public class Messages {
@@ -17,12 +18,20 @@ public class Messages {
         addParameter(m, ABSOLUTE_ODO_TOKEN, v);
     }
 
+    public static boolean hasOdoParameter(Message m){
+     return hasParameter(m, ABSOLUTE_ODO_TOKEN);
+    }
+
+    public static boolean hasParameter(Message m, String parameter){
+        return m.getParams().contains(parameter);
+    }
+
     private static void addParameter(Message m, String key, String value) {
         if (m.getParams() == null) {
             m.setParams("");
         }
-        if (m.getParams().contains(key)) {
-            System.out.println("Key exist");
+        if (hasParameter(m, key)) {
+            System.out.println("Key exist message: " + m.getId());
             return;
         }
         StringBuilder b = new StringBuilder(m.getParams());

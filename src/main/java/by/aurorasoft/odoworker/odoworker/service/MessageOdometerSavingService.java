@@ -22,7 +22,13 @@ public class MessageOdometerSavingService {
     @Transactional
     public void save(Message m, double oda, UnitOdoTemp unitOdoTemp) {
         Messages.addAbsoluteOdo(m, oda);
+        log.debug("update odo message: " + m.getId());
         messageRepository.save(m);
+        save(m, unitOdoTemp);
+    }
+
+    public void save(Message m, UnitOdoTemp unitOdoTemp){
+        log.debug("update unit_odo_temp message: " + m.getId());
         unitOdoTemp.setLastDatetime(m.getDatetime());
         unitOdoTemp.setLastMessageId(m.getId());
         unitOdoTempRepository.save(unitOdoTemp);

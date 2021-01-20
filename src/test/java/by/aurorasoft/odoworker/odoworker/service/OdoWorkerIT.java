@@ -2,23 +2,29 @@ package by.aurorasoft.odoworker.odoworker.service;
 
 import by.aurorasoft.odoworker.odoworker.domain.Message;
 import by.aurorasoft.odoworker.odoworker.domain.Messages;
+import by.aurorasoft.odoworker.odoworker.domain.UnitOdoTemp;
 import by.aurorasoft.odoworker.odoworker.repository.MessageRepository;
+import by.aurorasoft.odoworker.odoworker.repository.UnitOdoTempRepository;
 import by.nhorushko.distancecalculator.DistanceCalculator;
-import by.nhorushko.distancecalculator.LatLngAltImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class OdoWorkerIT {
 
     @Autowired
     private OdoWorker odoWorker;
+
+    @Autowired
+    private UnitOdoTempRepository unitOdoTempRepository;
 
     @Autowired
     private MessageRepository messageRepository;
@@ -79,6 +85,45 @@ class OdoWorkerIT {
         double expected = distanceCalculator.calculateDistance(messageRepository.findAllByUnitId(9L));
 
         assertEquals(expected, actual, 10);
+    }
+
+    @Test
+    @Sql(value = {"classpath:sql/schema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/init-temp-odo.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/unit-9.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/message-unit-9-small-odv-exists.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+
+    @Sql(value = {"classpath:sql/message-unit-9-small-odv-exists-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void name33() {
+        odoWorker.start();
+        Message message = messageRepository.findLastMessageForUnit(9l).get();
+        double actual = message.getValue(Messages.ABSOLUTE_ODO_TOKEN);
+
+        UnitOdoTemp unitOdoTemp = unitOdoTempRepository.findById(9l).get();
+        assertEquals(3391L, unitOdoTemp.getLastMessageId());
+        assertEquals(Instant.parse("2018-12-04T09:38:29Z"), unitOdoTemp.getLastDatetime());
+        assertEquals(0, actual, 0);
+    }
+
+    @Test
+    @Sql(value = {"classpath:sql/schema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/init-temp-odo.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/unit-9.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:sql/message-unit-9-small-odv-exists_last_odv_not_exist.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+
+    @Sql(value = {"classpath:sql/message-unit-9-small-odv-exists-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void name44() {
+        odoWorker.start();
+        Message lastMessage = messageRepository.findLastMessageForUnit(9l).get();
+        double actual = lastMessage.getValue(Messages.ABSOLUTE_ODO_TOKEN);
+
+        UnitOdoTemp unitOdoTemp = unitOdoTempRepository.findById(9l).get();
+        assertEquals(3391L, unitOdoTemp.getLastMessageId());
+        assertEquals(Instant.parse("2018-12-04T09:38:29Z"), unitOdoTemp.getLastDatetime());
+        assertEquals(3391L, lastMessage.getId(), 0);
+        assertTrue(Messages.hasOdoParameter(lastMessage));
     }
 
     @Test

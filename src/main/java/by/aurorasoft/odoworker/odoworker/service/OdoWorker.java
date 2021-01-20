@@ -36,7 +36,7 @@ public class OdoWorker {
 
     @Scheduled(fixedDelay = 10000)
     public void start() {
-        log.debug("#### start ####");
+        log.info("#### start ####");
         List<Unit> units = unitRepository.findAll();
         for (Unit unit : units) {
             log.debug("start unit: {}", unit);
@@ -61,7 +61,7 @@ public class OdoWorker {
             Instant end = start.plusSeconds(PACE);
             log.debug("unit: {} try get messages between {} - {}", unitOdoTemp.getUnitId(), start, end);
             final List<Message> messages = messageRepository.findMessagesForUnitBetweenDatetimes(unitOdoTemp.getUnitId(), start, end);
-            log.debug("unit: {} received messages count: {}", unitOdoTemp.getUnitId(), messages.size());
+            log.info("unit: {} received messages count: {}", unitOdoTemp.getUnitId(), messages.size());
             if (messages.size() == 0) {
                 unitOdoTemp.setLastDatetime(end);
                 unitOdoTempRepository.save(unitOdoTemp);
@@ -81,6 +81,15 @@ public class OdoWorker {
             }
             while (iterator.hasNext()) {
                 Message next = iterator.next();
+
+                if (Messages.hasOdoParameter(next)) {
+                    while (iterator.hasNext() && Messages.hasOdoParameter(next)) {
+                        log.debug("_odv exists. skip update message: " + next.getId());
+                        prev = next;
+                        next = iterator.next();
+                    }
+                }
+
                 convert(prev, next, unitOdoTemp);
                 prev = next;
             }
@@ -89,8 +98,8 @@ public class OdoWorker {
     }
 
     private void convert(Message prev, Message next, UnitOdoTemp unitOdoTemp) {
-            double odr = distanceCalculator.calculateDistance(prev, next);
-            double oda = prev.getValue(ABSOLUTE_ODO_TOKEN) + odr;
-            messageParamSaveService.save(next, oda, unitOdoTemp);
+        double odr = distanceCalculator.calculateDistance(prev, next);
+        double oda = prev.getValue(ABSOLUTE_ODO_TOKEN) + odr;
+        messageParamSaveService.save(next, oda, unitOdoTemp);
     }
 }
