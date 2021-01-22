@@ -8,7 +8,6 @@ import by.aurorasoft.odoworker.odoworker.repository.UnitRepository;
 import by.nhorushko.distancecalculator.DistanceCalculator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -31,10 +30,9 @@ public class OdoWorker {
     private final UnitDataRepository unitDataRepository;
     private final MessageOdometerSavingService messageParamSaveService;
 
-    @Scheduled(fixedDelay = 10000)
-    public void start() {
-        log.info("#### start ####");
-        List<Unit> units = unitRepository.findAll();
+
+    public void mainWorker(long minId, long maxId, Instant stopTime) {
+        List<Unit> units = unitRepository.findAll(minId, maxId);
         for (Unit unit : units) {
             log.debug("start unit: {}", unit);
             Optional<UnitOdoTemp> optional = unitOdoTempRepository.findById(unit.getId());
@@ -60,12 +58,11 @@ public class OdoWorker {
                 optional = Optional.of(new UnitOdoTemp(unit.getId(), firstMessageOptional.get().getDatetime()));
             }
             log.debug("unit: {} start from: {}", unit, optional.get());
-            processMessages(optional.get());
+            processMessages(optional.get(), stopTime);
         }
-        log.debug("#### end ####");
     }
 
-    private void processMessages(UnitOdoTemp unitOdoTemp) {
+    private void processMessages(UnitOdoTemp unitOdoTemp, Instant stopTime) {
         Instant start = unitOdoTemp.getLastDatetime();
         Instant finish = unitDataRepository.findById(unitOdoTemp.getUnitId()).get().getLastMessage().getDatetime();
         while (start.isBefore(finish)) {
@@ -105,6 +102,9 @@ public class OdoWorker {
                 prev = next;
             }
             start = end;
+            if (stopTime != null && stopTime.isAfter(Instant.now())) {
+                log.debug("stop worker by stop time");
+            }
         }
     }
 

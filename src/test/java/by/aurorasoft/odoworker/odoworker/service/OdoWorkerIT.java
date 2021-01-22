@@ -41,7 +41,7 @@ class OdoWorkerIT {
     @Sql(value = {"classpath:sql/message-unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void name() {
-        odoWorker.start();
+        odoWorker.mainWorker(0, 5000, Instant.now());
         List<Message> messages = messageRepository.findAll();
 
         assertEquals(5, messages.size());
@@ -62,7 +62,7 @@ class OdoWorkerIT {
     @Sql(value = {"classpath:sql/message-unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void name2() {
-        odoWorker.start();
+        odoWorker.mainWorker(0, 5000, Instant.now());
         Message message = messageRepository.findLastMessageForUnit(9l).get();
         double actual = message.getValue(Messages.ABSOLUTE_ODO_TOKEN);
         double expected = distanceCalculator.calculateDistance(messageRepository.findAllByUnitId(9L));
@@ -79,7 +79,7 @@ class OdoWorkerIT {
     @Sql(value = {"classpath:sql/message-unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void name3() {
-        odoWorker.start();
+        odoWorker.mainWorker(0, 5000, Instant.now());
         Message message = messageRepository.findLastMessageForUnit(9l).get();
         double actual = message.getValue(Messages.ABSOLUTE_ODO_TOKEN);
         double expected = distanceCalculator.calculateDistance(messageRepository.findAllByUnitId(9L));
@@ -96,7 +96,7 @@ class OdoWorkerIT {
     @Sql(value = {"classpath:sql/message-unit-9-small-odv-exists-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void name33() {
-        odoWorker.start();
+        odoWorker.mainWorker(0, 5000, Instant.now());
         Message message = messageRepository.findLastMessageForUnit(9l).get();
         double actual = message.getValue(Messages.ABSOLUTE_ODO_TOKEN);
 
@@ -115,7 +115,7 @@ class OdoWorkerIT {
     @Sql(value = {"classpath:sql/message-unit-9-small-odv-exists-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void name44() {
-        odoWorker.start();
+        odoWorker.mainWorker(0, 5000, Instant.now());
         Message lastMessage = messageRepository.findLastMessageForUnit(9l).get();
         double actual = lastMessage.getValue(Messages.ABSOLUTE_ODO_TOKEN);
 
@@ -135,7 +135,7 @@ class OdoWorkerIT {
     @Sql(value = {"classpath:sql/message-unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = {"classpath:sql/unit-9-del.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void name4() {
-        odoWorker.start();
+        odoWorker.mainWorker(0, 5000, Instant.now());
         Message message = messageRepository.findLastMessageForUnit(9l).get();
         double actual = message.getValue(Messages.ABSOLUTE_ODO_TOKEN);
         System.out.println("QQQQQ " + actual);

@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +38,6 @@ public class OdoWorkerTest {
     void test() {
         when(unitRepository.findAll()).thenReturn(List.of(new Unit(1l, "name")));
 
-        odoWorker.start();
+        odoWorker.mainWorker(0, 5000, Instant.now());
     }
 }
