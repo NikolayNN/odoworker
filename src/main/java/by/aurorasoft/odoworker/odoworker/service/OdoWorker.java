@@ -33,7 +33,12 @@ public class OdoWorker {
 
     public void mainWorker(long minId, long maxId, Instant stopTime) {
         List<Unit> units = unitRepository.findAll(minId, maxId);
+        Optional<Long> lastUpdatedUnitId = unitOdoTempRepository.findMinUnitId();
         for (Unit unit : units) {
+            if (lastUpdatedUnitId.isPresent() && unit.getId() > lastUpdatedUnitId.get()) {
+                log.info("Unit: {} skip, because last updated unit was: {}", unit.getId(), lastUpdatedUnitId.get());
+                continue;
+            }
             log.debug("start unit: {}", unit);
             Optional<UnitOdoTemp> optional = unitOdoTempRepository.findById(unit.getId());
             if (optional.isEmpty()) {
