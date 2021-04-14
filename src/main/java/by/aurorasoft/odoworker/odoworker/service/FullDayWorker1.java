@@ -21,7 +21,7 @@ public class FullDayWorker1 {
     @Scheduled(fixedDelay = 60000)
     public void start() {
         log.info("#### start worker 1 ####");
-        odoWorker.mainWorker(minId, maxId, getStopTime(workTime));
+        odoWorker.mainWorker(minId, maxId, getStopTime(workTime), true);
         log.debug("#### end ####");
     }
 

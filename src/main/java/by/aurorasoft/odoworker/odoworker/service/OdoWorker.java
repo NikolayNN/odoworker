@@ -31,11 +31,11 @@ public class OdoWorker {
     private final MessageOdometerSavingService messageParamSaveService;
 
 
-    public void mainWorker(long minId, long maxId, Instant stopTime) {
+    public void mainWorker(long minId, long maxId, Instant stopTime, boolean onlyNew) {
         List<Unit> units = unitRepository.findAll(minId, maxId);
         Optional<Long> lastUpdatedUnitId = unitOdoTempRepository.findMinUnitId();
         for (Unit unit : units) {
-            if (lastUpdatedUnitId.isPresent() && unit.getId() > lastUpdatedUnitId.get()) {
+            if (onlyNew && lastUpdatedUnitId.isPresent() && unit.getId() > lastUpdatedUnitId.get()) {
                 log.info("Unit: {} skip, because last updated unit was: {}", unit.getId(), lastUpdatedUnitId.get());
                 continue;
             }

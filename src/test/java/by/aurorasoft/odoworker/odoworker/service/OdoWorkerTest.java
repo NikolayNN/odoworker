@@ -38,6 +38,6 @@ public class OdoWorkerTest {
     void test() {
         when(unitRepository.findAll()).thenReturn(List.of(new Unit(1l, "name")));
 
-        odoWorker.mainWorker(0, 5000, Instant.now());
+        odoWorker.mainWorker(0, 5000, Instant.now(), true);
     }
 }

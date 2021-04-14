@@ -14,14 +14,14 @@ public class NightWorker1 {
 
     private final OdoWorker odoWorker;
 
-    private static final long minId = 1;
-    private static final long maxId = 749;
-    private static final long workTime = 0;
+    private static final long minId = 1999;
+    private static final long maxId = 1300;
+    private static final long workTime = 8*3600;
 
-//    @Scheduled(fixedDelay = 60000)
+    @Scheduled(cron = "0 0 19 * * *")
     public void start() {
         log.info("#### start night worker 1 ####");
-        odoWorker.mainWorker(minId, maxId, getStopTime(workTime));
+        odoWorker.mainWorker(minId, maxId, getStopTime(workTime), false);
         log.debug("#### end ####");
     }
 

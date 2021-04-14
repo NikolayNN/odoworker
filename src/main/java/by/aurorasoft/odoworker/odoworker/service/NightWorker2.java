@@ -21,7 +21,7 @@ public class NightWorker2 {
 //    @Scheduled(fixedDelay = 60000)
     public void start() {
         log.info("#### start night worker 2 ####");
-        odoWorker.mainWorker(minId, maxId, getStopTime(workTime));
+        odoWorker.mainWorker(minId, maxId, getStopTime(workTime), false);
         log.debug("#### end ####");
     }
 

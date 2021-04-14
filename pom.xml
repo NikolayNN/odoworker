@@ -89,7 +89,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <imageName>cooll3r/odoworker:test</imageName>
+                    <imageName>cooll3r/odoworker:prod2</imageName>
                     <baseImage>maven:3.5-jdk-11</baseImage>
                     <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
                     <!-- copy the service's jar file from target into the root directory of the image -->
