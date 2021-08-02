@@ -1,13 +1,12 @@
 package by.aurorasoft.odoworker.odoworker.domain;
 
-import java.lang.reflect.AccessibleObject;
 import java.util.Locale;
 
 public class Messages {
 
     public static final String ABSOLUTE_ODO_TOKEN = "_odv";
 
-    public static final String VALUE_TYPE = ":1:";
+    public static final String VALUE_TYPE = ":";
     public static final String VALUE_SEPARATOR = ",";
 
     public static void addParameter(Message m, String key, double value) {
