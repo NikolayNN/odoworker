@@ -3,7 +3,6 @@ package by.aurorasoft.odoworker.odoworker.domain;
 import by.nhorushko.distancecalculator.LatLngAlt;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -43,10 +42,13 @@ public class Message implements LatLngAlt {
     @Column(name = "params")
     private String params;
 
+    @Column(name = "is_valid")
+    private boolean isValid;
+
     public double getValue(String parameterName) {
         String name = parameterName + ":";
         int start = params.indexOf(name);
-        start = start + name.length() + 2;
+        start = start + name.length();
         int end = params.indexOf(44, start);
         return end == -1 ? Double.parseDouble(params.substring(start)) : Double.parseDouble(params.substring(start, end));
     }

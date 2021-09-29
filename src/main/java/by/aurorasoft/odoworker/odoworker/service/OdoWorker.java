@@ -32,37 +32,38 @@ public class OdoWorker {
 
 
     public void mainWorker(long minId, long maxId, Instant stopTime, boolean onlyNew) {
-        List<Unit> units = unitRepository.findAll(minId, maxId);
+        List<Unit> units = unitRepository.findAllToHandle(minId, maxId);
+        System.out.println("$$$$ " + units);
         Optional<Long> lastUpdatedUnitId = unitOdoTempRepository.findMinUnitId();
         for (Unit unit : units) {
             if (onlyNew && lastUpdatedUnitId.isPresent() && unit.getId() > lastUpdatedUnitId.get()) {
                 log.info("Unit: {} skip, because last updated unit was: {}", unit.getId(), lastUpdatedUnitId.get());
                 continue;
             }
-            log.debug("start unit: {}", unit);
+            log.info("start unit: {}", unit);
             Optional<UnitOdoTemp> optional = unitOdoTempRepository.findById(unit.getId());
             if (optional.isEmpty()) {
-                log.debug("unit: {} is new", unit);
+                log.info("unit: {} is new", unit);
                 Optional<UnitData> last = unitDataRepository.findById(unit.getId());
                 if (last.isEmpty()) {
-                    log.debug("unit: {} no data by unit_data. skip", unit);
+                    log.info("unit: {} no data by unit_data. skip", unit);
                     continue;
                 }
                 if (last.get().getLastMessage() == null) {
-                    log.debug("unit: {} no data by last_message. skip", unit);
+                    log.info("unit: {} no data by last_message. skip", unit);
                     continue;
                 }
                 Instant queryStart = Instant.now();
-                log.debug("unit: {} try find first message. query start at {}", unit, queryStart);
+                log.info("unit: {} try find first message. query start at {}", unit, queryStart);
                 Optional<Message> firstMessageOptional = messageRepository.findFirstMessageForUnit(unit.getId());
-                log.debug("unit: {} query end. processing time: {} seconds", unit, (Instant.now().getEpochSecond() - queryStart.getEpochSecond()));
+                log.info("unit: {} query end. processing time: {} seconds", unit, (Instant.now().getEpochSecond() - queryStart.getEpochSecond()));
                 if (firstMessageOptional.isEmpty()) {
-                    log.debug("unit: {} no data. skip", unit);
+                    log.info("unit: {} no data. skip", unit);
                     continue;
                 }
                 optional = Optional.of(new UnitOdoTemp(unit.getId(), firstMessageOptional.get().getDatetime()));
             }
-            log.debug("unit: {} start from: {}", unit, optional.get());
+            log.info("unit: {} start from: {}", unit, optional.get());
             processMessages(optional.get(), stopTime);
         }
     }
@@ -72,7 +73,7 @@ public class OdoWorker {
         Instant finish = unitDataRepository.findById(unitOdoTemp.getUnitId()).get().getLastMessage().getDatetime();
         while (start.isBefore(finish)) {
             Instant end = start.plusSeconds(PACE);
-            log.debug("unit: {} try get messages between {} - {}", unitOdoTemp.getUnitId(), start, end);
+            log.info("unit: {} try get messages between {} - {}", unitOdoTemp.getUnitId(), start, end);
             final List<Message> messages = messageRepository.findMessagesForUnitBetweenDatetimes(unitOdoTemp.getUnitId(), start, end);
             log.info("unit: {} received messages count: {}", unitOdoTemp.getUnitId(), messages.size());
             if (messages.size() == 0) {
@@ -97,7 +98,7 @@ public class OdoWorker {
 
                 if (Messages.hasOdoParameter(next)) {
                     while (iterator.hasNext() && Messages.hasOdoParameter(next)) {
-                        log.debug("_odv exists. skip update message: " + next.getId());
+                        log.info("_odv exists. skip update message: " + next.getId());
                         prev = next;
                         next = iterator.next();
                     }
@@ -108,7 +109,7 @@ public class OdoWorker {
             }
             start = end;
             if (stopTime != null && stopTime.isAfter(Instant.now())) {
-                log.debug("stop worker by stop time");
+                log.info("stop worker by stop time");
             }
         }
     }

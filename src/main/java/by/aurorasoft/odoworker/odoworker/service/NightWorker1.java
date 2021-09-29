@@ -18,7 +18,7 @@ public class NightWorker1 {
     private static final long maxId = 1300;
     private static final long workTime = 8*3600;
 
-    @Scheduled(cron = "0 0 19 * * *")
+//    @Scheduled(cron = "0 0 19 * * *")
     public void start() {
         log.info("#### start night worker 1 ####");
         odoWorker.mainWorker(minId, maxId, getStopTime(workTime), false);
